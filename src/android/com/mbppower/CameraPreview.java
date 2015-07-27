@@ -20,6 +20,7 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
 	private final String TAG = "CameraPreview";
 	private final String setOnPictureTakenHandlerAction = "setOnPictureTakenHandler";
 	private final String setColorEffectAction = "setColorEffect";
+	private final String setFlashModeAction = "setFlashMode";
 	private final String startCameraAction = "startCamera";
 	private final String stopCameraAction = "stopCamera";
 	private final String switchCameraAction = "switchCamera";
@@ -50,6 +51,9 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
 	    else if (setColorEffectAction.equals(action)){
 	      return setColorEffect(args, callbackContext);
 	    }
+	    else if (setFlashModeAction.equals(action)){
+	      return setFlashMode(args, callbackContext);
+	    }	    	    
 	    else if (stopCameraAction.equals(action)){
 		    return stopCamera(args, callbackContext);
 	    }
@@ -67,6 +71,7 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     }
 
 	private boolean startCamera(final JSONArray args, CallbackContext callbackContext) {
+		Log.d(TAG, "camera started");
         if(fragment != null){
 	        return false;
         }
@@ -104,10 +109,12 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
 					}
 					//display camera bellow the webview
 					if(toBack){
-						webView.setBackgroundColor(0x00000000);
-						ViewGroup g = (ViewGroup)webView.getParent();
-						g.setBackgroundColor(0x00000000);
-						g.bringToFront();
+						// webView.setBackgroundColor(0x00000000);
+						// ViewGroup g = (ViewGroup)webView.getParent();
+						// g.setBackgroundColor(0x00000000);
+						// g.bringToFront();
+						webView.getView().setBackgroundColor(0x00000000);
+						((ViewGroup)webView.getView()).bringToFront();						
 					}
 					else{
 						//set camera back to front
@@ -187,6 +194,41 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
         params.setColorEffect(Camera.Parameters.EFFECT_SOLARIZE);
       } else if (effect.equals("whiteboard")) {
         params.setColorEffect(Camera.Parameters.EFFECT_WHITEBOARD);
+      }
+
+  	  fragment.setCameraParameters(params);
+	    return true;
+    } catch(Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+	}
+
+	private boolean setFlashMode(final JSONArray args, CallbackContext callbackContext) {
+	Log.d(TAG, "I am here");
+	  if(fragment == null){
+	    return false;
+	  }
+
+    Camera camera = fragment.getCamera();
+    if (camera == null){
+      return true;
+    }
+
+
+	callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, "Flash mode here"));
+
+    Camera.Parameters params = camera.getParameters();    
+
+    try {
+      String flashmode = args.getString(0);
+
+      if (flashmode.equals("on")) {
+        params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+      } else if (flashmode.equals("off")) {
+        params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+      } else if (flashmode.equals("auto")) {
+        params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
       }
 
   	  fragment.setCameraParameters(params);
