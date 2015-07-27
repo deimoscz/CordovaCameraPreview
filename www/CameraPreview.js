@@ -33,6 +33,10 @@ CameraPreview.setColorEffect = function(effect) {
   exec(null, null, PLUGIN_NAME, "setColorEffect", [effect]);
 };
 
+CameraPreview.setFlashMode = function(flashmode) {
+  exec(null, null, PLUGIN_NAME, "setFlashMode", [flashmode]);
+};
+
 CameraPreview.switchCamera = function() {
 	exec(null, null, PLUGIN_NAME, "switchCamera", []);
 };
